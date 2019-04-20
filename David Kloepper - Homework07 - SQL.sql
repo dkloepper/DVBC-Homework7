@@ -1,30 +1,42 @@
 -- David Kloepper --
 -- Data Visualization Bootcamp, Cohort 3 --
--- April 17, 2019 --
+-- April 18, 2019 --
 
 USE sakila;
 
 -- 1a. Display the first and last names of all actors from the table actor.--
-SELECT first_name, last_name FROM actor;
+SELECT first_name, last_name 
+FROM actor;
 
 -- 1b. Display the first and last name of each actor in a single column in upper case letters. Name the column Actor Name. --
-SELECT UPPER(CONCAT(first_name," ", last_name)) AS Actor_Name FROM actor; 
+SELECT UPPER(CONCAT(first_name," ", last_name)) AS Actor_Name 
+FROM actor; 
 
 -- 2a. You need to find the ID number, first name, and last name of an actor, of whom you know only the first name, "Joe." What is one query would you use to obtain this information? --
-SELECT actor_id, first_name, last_name FROM actor WHERE first_name = "Joe";
+SELECT actor_id, first_name, last_name 
+FROM actor 
+WHERE first_name = "Joe";
 
 -- 2b. Find all actors whose last name contain the letters GEN: -- 
-SELECT actor_id, first_name, last_name FROM actor WHERE last_name LIKE "%GEN%"; 
+SELECT actor_id, first_name, last_name 
+FROM actor 
+WHERE last_name LIKE "%GEN%"; 
 
 -- 2c. Find all actors whose last names contain the letters LI. This time, order the rows by last name and first name, in that order: -- 
-SELECT actor_id, first_name, last_name FROM actor WHERE last_name LIKE "%LI%" ORDER BY last_name, first_name; 
+SELECT actor_id, first_name, last_name 
+FROM actor 
+WHERE last_name LIKE "%LI%" 
+ORDER BY last_name, first_name; 
 
 -- 2d. Using IN, display the country_id and country columns of the following countries: Afghanistan, Bangladesh, and China --
-SELECT country_id, country FROM country WHERE country IN ('Afghanistan', 'Bangladesh', 'China');
+SELECT country_id, country 
+FROM country 
+WHERE country IN ('Afghanistan', 'Bangladesh', 'China');
 
 -- 3a. You want to keep a description of each actor. You don't think you will be performing queries on a description, so create a column in the table actor named description and use the data type BLOB (Make sure to research the type BLOB, as the difference between it and VARCHAR are significant). --
 ALTER TABLE actor
-ADD COLUMN description BLOB;
+ADD COLUMN description BLOB
+AFTER last_name;
 
 -- 3b. Very quickly you realize that entering descriptions for each actor is too much effort. Delete the description column. --
 ALTER TABLE actor
@@ -68,8 +80,11 @@ CREATE TABLE `address` (
 SELECT staff.first_name, staff.last_name, address.address FROM staff JOIN address ON staff.address_id = address.address_id;
 
 -- 6b. Use JOIN to display the total amount rung up by each staff member in August of 2005. Use tables staff and payment. --
-################### FIX THIS ONE
-SELECT CONCAT(staff.first_name," ",staff.last_name) AS staff_name, sum(payment.amount) AS total_amount FROM staff JOIN payment ON staff.staff_id = payment.staff_id GROUP BY staff.last_name, staff.first_name;
+SELECT CONCAT(staff.first_name," ",staff.last_name) AS staff_name, sum(payment.amount) AS total_amount 
+FROM staff 
+	JOIN payment ON staff.staff_id = payment.staff_id 
+WHERE YEAR(payment.payment_date) = 2005 AND MONTH(payment.payment_date) = 8
+GROUP BY staff.last_name, staff.first_name;
 
 -- 6c. List each film and the number of actors who are listed for that film. Use tables film_actor and film. Use inner join. --
 SELECT film.title, count(film_actor.actor_id) AS actor_count FROM film INNER JOIN film_actor ON film.film_id = film_actor.film_id GROUP BY film.title;
@@ -134,13 +149,6 @@ SELECT store.store_id, sum(payment.amount) as total_business
         INNER JOIN payment ON customer.customer_id = payment.customer_id
 GROUP BY store.store_id;
 
-#store > staff > rental > payment
-SELECT store.store_id, sum(payment.amount) as total_business
-	FROM store
-		INNER JOIN staff ON store.store_id = staff.store_id
-        INNER JOIN rental ON staff.staff_id = rental.staff_id
-        INNER JOIN payment ON rental.rental_id = payment.rental_id
-GROUP BY store.store_id;
 
 -- 7g. Write a query to display for each store its store ID, city, and country. -- 
 SELECT store.store_id, city.city, country.country
